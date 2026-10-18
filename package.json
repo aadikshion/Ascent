@@ -1,0 +1,8 @@
+{
+  "name": "ascent",
+  "version": "0.1.0",
+  "description": "Ascended Score Engine for Ascend x Elysium",
+  "main": "server.js",
+  "scripts": { "start": "node server.js", "test": "node test.js" },
+  "dependencies": { "ethers": "^6.13.0", "express": "^4.19.2" }
+}

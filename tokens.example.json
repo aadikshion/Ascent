@@ -1,0 +1,11 @@
+[
+  {
+    "address": "0xTOKEN_ADDRESS",
+    "symbol": "TKN",
+    "pool": "0xASCEND_POOL_OR_HOOK_ADDRESS",
+    "deployer": "0xDEPLOYER_ADDRESS",
+    "fromBlock": 0,
+    "marketCap": 250000,
+    "dailyVolume": [12000, 9000, 7000, 5000, 4000, 3000, 2000]
+  }
+]
