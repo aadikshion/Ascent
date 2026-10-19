@@ -21,15 +21,16 @@ code{background:#10151c;padding:2px 6px;border-radius:4px;font-size:12px}
 </style></head><body>
 <header><h1>Ascent <span id="mode" class="mode"></span></h1>
 <p>Live Ascended Score, anti-sybil clustering and buyback estimates for tokens launched on Ascend.</p></header>
+<div style="padding:14px 24px 0;display:flex;gap:8px"><input id="q" placeholder="Paste any token address (or demo symbol) to score it" style="flex:1;padding:9px 12px;border-radius:6px;border:1px solid var(--bd);background:var(--card);color:var(--tx)"><button id="go" style="padding:9px 16px;border-radius:6px;border:0;background:var(--b);color:#04121f;font-weight:600;cursor:pointer">Score</button></div><div id="err" style="padding:6px 24px 0;color:var(--r);font-size:13px"></div>
 <main>
-<section class="card"><table><thead><tr><th>Token</th><th>Score</th><th>Real holders</th><th>Mkt cap</th><th>TW volume/day</th><th>Top 5</th><th>Linked</th><th>Est. buyback</th><th>Status</th></tr></thead><tbody id="rows"></tbody></table></section>
+<section class="card"><table><thead><tr><th>Token</th><th>Score</th><th>Real holders</th><th>Mkt cap</th><th>TW volume/day</th><th>Top 5</th><th>Linked</th><th>Est. buyback</th><th>Status</th></tr></thead><tbody id="rows"><tr><td colspan="9" style="color:var(--mu)">Loading live Elysium data... this can take up to a minute on first load.</td></tr></tbody></table></section>
 <section class="card" id="detail"><p style="color:var(--mu)">Select a token to see its breakdown.</p></section>
 </main>
 <script>
 const $=(s)=>document.querySelector(s);
 const esc=(s)=>String(s).replace(/[&<>"']/g,(c)=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const col=(s)=>s>=60?'var(--g)':s>=40?'var(--y)':'var(--r)';
-const usd=(n)=>'$'+Number(n).toLocaleString();
+const usd=(n)=>'$'+Math.round(Number(n)).toLocaleString();
 let tokens=[];
 function bar(label,v,hint){return `<div class="lbl"><span>${label}</span><span>${v}/100${hint?' · '+esc(hint):''}</span></div><div class="bar"><i style="width:${v}%;background:${col(v)}"></i></div>`}
 function show(sym){
@@ -37,7 +38,7 @@ function show(sym){
   document.querySelectorAll('tr.row').forEach(r=>r.classList.toggle('sel',r.dataset.s===sym));
   $('#detail').innerHTML=`<h2 style="margin:0">${esc(t.symbol)} <span class="pill" style="background:${col(t.score)}">${t.score}/100</span></h2>
   <div style="color:var(--mu);font-size:12px">${esc(t.address)}</div>
-  ${bar('Unique holders',t.components.holders,t.effHolders+' independent ('+t.rawHolders+' wallets)')}
+  ${bar('Unique holders',t.components.holders,t.effHolders+' independent ('+t.rawHolders+' wallets'+(t.listedHolders?', explorer lists '+t.listedHolders.toLocaleString():'')+')')}
   ${bar('Time-weighted volume',t.components.volume,usd(t.twVolume)+'/day')}
   ${bar('Market cap',t.components.mcap,usd(t.marketCap))}
   ${bar('Concentration',t.components.concentration,'top 5 = '+t.top5+'%')}
@@ -48,10 +49,19 @@ function show(sym){
   <h3>Estimated buyback share</h3>${t.buyback.share}% (~${usd(t.buyback.usd)} of the modelled pool)
   <h3>Embed badge</h3><code>&lt;img src="/api/badge/${esc(t.symbol)}.svg"&gt;</code><br><br><img src="/api/badge/${encodeURIComponent(t.symbol)}.svg">`;
 }
-fetch('/api/tokens').then(r=>r.json()).then(d=>{
-  $('#mode').textContent=d.mode==='live'?'LIVE':'DEMO DATA';tokens=d.tokens.sort((a,b)=>b.score-a.score);
-  $('#rows').innerHTML=tokens.map(t=>`<tr class="row" data-s="${esc(t.symbol)}"><td><b>${esc(t.symbol)}</b></td><td><span class="pill" style="background:${col(t.score)}">${t.score}</span></td><td>${t.effHolders}</td><td>${usd(t.marketCap)}</td><td>${usd(t.twVolume)}</td><td>${t.top5}%</td><td>${t.clusteredShare}%</td><td>${t.buyback.share}%</td><td>${t.eligible?'<span style="color:var(--g)">Likely eligible</span>':'<span style="color:var(--r)">Not yet</span>'}</td></tr>`).join('');
+function render(){
+  $('#rows').innerHTML=tokens.map(t=>`<tr class="row" data-s="${esc(t.symbol)}"><td><b>${esc(t.symbol)}</b></td><td><span class="pill" style="background:${col(t.score)}">${t.score}</span></td><td>${t.effHolders}</td><td>${usd(t.marketCap)}</td><td>${usd(t.twVolume)}</td><td>${t.top5}%</td><td>${t.clusteredShare}%</td><td>${t.buyback.share}%</td><td>${t.eligible?'<span style="color:var(--g)">Likely eligible</span>':t.noMarket?'<span style="color:var(--mu)">No market yet</span>':'<span style="color:var(--r)">Not yet</span>'}</td></tr>`).join('');
   document.querySelectorAll('tr.row').forEach(r=>r.onclick=()=>show(r.dataset.s));
-  if(tokens[0])show(tokens[0].symbol);
-});
+}
+fetch('/api/tokens').then(r=>r.json()).then(d=>{
+  $('#mode').textContent=d.mode==='demo'?'DEMO DATA':'LIVE';tokens=d.tokens.sort((a,b)=>b.score-a.score);
+  render();if(tokens[0])show(tokens[0].symbol);
+}).catch(e=>{$('#rows').innerHTML='<tr><td colspan="9" style="color:var(--r)">Failed to load data: '+esc(e.message)+'. Check the terminal for errors.</td></tr>';});
+$('#go').onclick=async()=>{
+  const id=$('#q').value.trim();if(!id)return;$('#err').textContent='Scoring...';
+  try{const r=await fetch('/api/score/'+encodeURIComponent(id));const t=await r.json();if(!r.ok)throw new Error(t.error);
+    tokens=tokens.filter(x=>x.symbol!==t.symbol);tokens.unshift(t);render();show(t.symbol);$('#err').textContent='';
+  }catch(e){$('#err').textContent='Could not score: '+e.message;}
+};
+$('#q').onkeydown=(e)=>{if(e.key==='Enter')$('#go').click();};
 </script></body></html>
