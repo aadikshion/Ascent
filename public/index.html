@@ -1,67 +1,112 @@
 <!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Ascent: Ascended Score Engine</title>
+<title>Ascent: Ascended Score Engine for Ascend × Elysium</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#0d1117;--card:#161b22;--bd:#30363d;--tx:#e6edf3;--mu:#8b949e;--g:#2ea043;--y:#d29922;--r:#da3633;--b:#58a6ff}
-*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--tx);font:14px/1.5 system-ui,sans-serif}
-header{padding:20px 24px;border-bottom:1px solid var(--bd)}h1{margin:0;font-size:20px}header p{margin:4px 0 0;color:var(--mu)}
-.mode{display:inline-block;padding:1px 8px;border-radius:10px;border:1px solid var(--bd);font-size:12px;margin-left:8px;color:var(--y)}
-main{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:16px;padding:16px 24px}
-@media(max-width:900px){main{grid-template-columns:1fr}}
-.card{background:var(--card);border:1px solid var(--bd);border-radius:8px;padding:14px;overflow-x:auto}
-table{width:100%;border-collapse:collapse}th,td{text-align:left;padding:8px 6px;border-bottom:1px solid var(--bd);white-space:nowrap}
-th{color:var(--mu);font-weight:500;font-size:12px}tr.row{cursor:pointer}tr.row:hover,tr.sel{background:#1c2330}
-.pill{padding:2px 8px;border-radius:10px;font-size:12px;font-weight:600}
-.bar{height:8px;background:#222a35;border-radius:4px;overflow:hidden}.bar i{display:block;height:100%}
-.flag{padding:6px 10px;border-left:3px solid;margin:6px 0;background:#10151c;border-radius:0 4px 4px 0}
-.critical{border-color:var(--r)}.warn{border-color:var(--y)}.info{border-color:var(--b)}
-.lbl{display:flex;justify-content:space-between;color:var(--mu);font-size:12px;margin-top:10px}
-h3{margin:14px 0 4px;font-size:13px;color:var(--mu);text-transform:uppercase;letter-spacing:.05em}
-code{background:#10151c;padding:2px 6px;border-radius:4px;font-size:12px}
+:root{--bg:#070b14;--s:#0f1626;--s2:#141d31;--bd:#1f2a44;--tx:#e8ecf6;--mu:#8a96b5;--g:#34d399;--y:#fbbf24;--r:#fb7185;--a:#7c5cff;--c:#22d3ee}
+*{box-sizing:border-box}html{scroll-behavior:smooth}
+body{margin:0;color:var(--tx);font:14px/1.55 system-ui,-apple-system,Segoe UI,Roboto,sans-serif;min-height:100vh;background:radial-gradient(900px 480px at 12% -8%,#2a1f6b66,transparent),radial-gradient(800px 480px at 92% 0,#0e4f6b55,transparent),var(--bg)}
+h1,h2,h3,.logo{font-family:'Space Grotesk',system-ui,sans-serif;margin:0}
+a{color:var(--c);text-decoration:none}.wrap{max-width:1240px;margin:0 auto;padding:0 24px}
+nav{display:flex;justify-content:space-between;align-items:center;padding:16px 24px;max-width:1240px;margin:0 auto}
+.logo{font-size:20px;font-weight:700}.logo b{background:linear-gradient(135deg,var(--a),var(--c));-webkit-background-clip:text;color:transparent}
+nav .l{display:flex;gap:18px;align-items:center}nav a{color:var(--mu)}nav a:hover{color:var(--tx)}
+.chip{display:inline-block;padding:2px 10px;border-radius:99px;font-size:12px;font-weight:600;border:1px solid var(--bd);white-space:nowrap}
+.chip.g{color:var(--g);border-color:#34d39955;background:#34d3991a}.chip.y{color:var(--y);border-color:#fbbf2455;background:#fbbf241a}.chip.r{color:var(--r);border-color:#fb718555;background:#fb71851a}.chip.m{color:var(--mu)}
+.hero{padding-top:34px;padding-bottom:10px}.eyebrow{color:var(--c);font-weight:600;letter-spacing:.08em;text-transform:uppercase;font-size:12px;margin:0 0 10px}
+h1{font-size:clamp(30px,5.2vw,54px);line-height:1.08;max-width:820px}.gt{background:linear-gradient(135deg,var(--a),var(--c));-webkit-background-clip:text;color:transparent}
+.sub{color:var(--mu);max-width:640px;font-size:16px;margin:14px 0 22px}
+.search{display:flex;gap:8px;max-width:680px}.search input{flex:1;min-width:0;padding:13px 16px;border-radius:12px;border:1px solid var(--bd);background:var(--s);color:var(--tx);font-size:15px}
+.search input:focus{outline:2px solid var(--a)}button{font:inherit;cursor:pointer}
+.btn{padding:0 20px;border:0;border-radius:12px;font-weight:700;color:#06101c;background:linear-gradient(135deg,var(--a),var(--c))}
+#err{color:var(--r);font-size:13px;min-height:20px;margin-top:6px}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;margin:14px 0 30px}
+.st{background:linear-gradient(180deg,var(--s2),var(--s));border:1px solid var(--bd);border-radius:14px;padding:14px 16px}.st b{display:block;font:700 26px 'Space Grotesk',sans-serif}.st span{color:var(--mu);font-size:12px}
+.top{display:flex;justify-content:space-between;align-items:center;margin:10px 0 12px;flex-wrap:wrap;gap:8px}
+.tabs button{background:none;border:1px solid var(--bd);color:var(--mu);padding:5px 14px;border-radius:99px;margin-left:6px}.tabs button.on{color:var(--tx);border-color:var(--a);background:#7c5cff22}
+.grid{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:18px;align-items:start}@media(max-width:940px){.grid{grid-template-columns:1fr}.hide{display:none}#detail{position:static!important;max-height:none!important}}
+.card{background:linear-gradient(180deg,var(--s2),var(--s));border:1px solid var(--bd);border-radius:16px;padding:16px}
+#detail{position:sticky;top:12px;max-height:calc(100vh - 24px);overflow:auto}
+.row{display:grid;grid-template-columns:26px 1.2fr 46px .7fr .8fr .6fr 118px;gap:8px;align-items:center;padding:9px 8px;border-radius:10px;cursor:pointer;border:1px solid transparent}
+.row.h{color:var(--mu);font-size:11px;text-transform:uppercase;letter-spacing:.06em;cursor:default}.row:not(.h):hover{background:#ffffff08}.row.sel{background:#7c5cff1f;border-color:#7c5cff66}
+.row small{display:block;color:var(--mu);font-size:11px}.star{background:none;border:0;color:#3a4565;font-size:16px;padding:0}.star.on{color:var(--y)}
+.dl{font-size:11px;margin-left:6px;font-weight:600}.up{color:var(--g)}.dn{color:var(--r)}
+.dh{display:flex;gap:16px;align-items:center}.dh h2{font-size:26px}.mu{color:var(--mu)}
+h3{font-size:12px;color:var(--mu);text-transform:uppercase;letter-spacing:.08em;margin:20px 0 8px}
+.fl{padding:7px 11px;border-left:3px solid;margin:6px 0;background:#0a1020;border-radius:0 8px 8px 0}.fl.critical{border-color:var(--r)}.fl.warn{border-color:var(--y)}.fl.info{border-color:var(--c)}
+.own{display:flex;height:18px;border-radius:9px;overflow:hidden;gap:2px;background:#0a1020}.own i{display:block;min-width:2px}
+.ent{display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--bd);font-size:13px}
+.path li{margin:4px 0}.path{padding-left:18px;margin:0}
+.sim{display:grid;grid-template-columns:90px 1fr 70px;gap:6px 10px;align-items:center}.sim input{width:100%;accent-color:var(--a)}.sim output{text-align:right;font-variant-numeric:tabular-nums}
+.res{display:flex;gap:14px;align-items:center;margin-top:10px;padding:12px;border-radius:12px;background:#0a1020;border:1px dashed var(--bd)}
+.acts{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.acts button,.acts a{padding:7px 14px;border-radius:10px;border:1px solid var(--bd);background:var(--s);color:var(--tx);font-size:13px}
+.meth{margin:34px 0 40px}.mg{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin-top:12px}.mg div{background:var(--s);border:1px solid var(--bd);border-radius:12px;padding:14px}.mg b{font:700 22px 'Space Grotesk';color:var(--c)}
+footer{color:var(--mu);font-size:12px;padding:0 24px 40px;max-width:1240px;margin:0 auto}
 </style></head><body>
-<header><h1>Ascent <span id="mode" class="mode"></span></h1>
-<p>Live Ascended Score, anti-sybil clustering and buyback estimates for tokens launched on Ascend.</p></header>
-<div style="padding:14px 24px 0;display:flex;gap:8px"><input id="q" placeholder="Paste any token address (or demo symbol) to score it" style="flex:1;padding:9px 12px;border-radius:6px;border:1px solid var(--bd);background:var(--card);color:var(--tx)"><button id="go" style="padding:9px 16px;border-radius:6px;border:0;background:var(--b);color:#04121f;font-weight:600;cursor:pointer">Score</button></div><div id="err" style="padding:6px 24px 0;color:var(--r);font-size:13px"></div>
-<main>
-<section class="card"><table><thead><tr><th>Token</th><th>Score</th><th>Real holders</th><th>Mkt cap</th><th>TW volume/day</th><th>Top 5</th><th>Linked</th><th>Est. buyback</th><th>Status</th></tr></thead><tbody id="rows"><tr><td colspan="9" style="color:var(--mu)">Loading live Elysium data... this can take up to a minute on first load.</td></tr></tbody></table></section>
-<section class="card" id="detail"><p style="color:var(--mu)">Select a token to see its breakdown.</p></section>
-</main>
+<nav><div class="logo"><b>▲</b> Ascent</div><div class="l"><a href="#board">Leaderboard</a><a href="#method">Methodology</a><span id="mode" class="chip m">…</span></div></nav>
+<header class="wrap hero"><p class="eyebrow">Ascend × Elysium · Ascended Score Engine</p>
+<h1>See who <span class="gt">really</span> qualifies for Ascended.</h1>
+<p class="sub">Live scores, wallet-cluster detection and buyback estimates for Elysium tokens, built on the criteria in Ascend's litepaper. Know what to fix before you apply.</p>
+<div class="search"><input id="q" placeholder="Paste a token address to score it instantly"><button class="btn" id="go">Score token</button></div><div id="err"></div>
+<div class="stats" id="stats"></div></header>
+<section class="wrap" id="board"><div class="top"><h2>Leaderboard</h2><div class="tabs" id="tabs"><button data-f="all" class="on">All</button><button data-f="ok">Eligible</button><button data-f="watch">★ Watchlist</button></div></div>
+<div class="grid"><div class="card" id="list"><p class="mu">Loading live Elysium data… first load can take up to a minute.</p></div><div class="card" id="detail"><p class="mu">Select a token to see its breakdown.</p></div></div></section>
+<section class="wrap meth" id="method"><h2>Methodology</h2><p class="mu" style="max-width:760px">Scores mirror the criteria Ascend publishes: market cap, unique holders, time-weighted volume and checks for concentrated or coordinated accumulation. Ascend's exact thresholds are internal and unpublished, so Ascent's targets are estimates and are fully configurable. This is a decision aid, not an official ruling.</p>
+<div class="mg" id="mg"></div><p class="mu" style="max-width:760px;margin-top:14px">Clustering uses on-chain transfers only: wallets receiving from the pool in the same block, and wallets funded by one common sender, are merged into one entity. Contract holders (pools, hooks, lockers) are excluded. Wallets holding under 0.001% of supply are ignored as dust.</p></section>
+<footer>Built for the Ascend × Elysium Builder Competition. Data from the Elysium testnet explorer API. Not financial advice.</footer>
 <script>
-const $=(s)=>document.querySelector(s);
-const esc=(s)=>String(s).replace(/[&<>"']/g,(c)=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const col=(s)=>s>=60?'var(--g)':s>=40?'var(--y)':'var(--r)';
-const usd=(n)=>'$'+Math.round(Number(n)).toLocaleString();
-let tokens=[];
-function bar(label,v,hint){return `<div class="lbl"><span>${label}</span><span>${v}/100${hint?' · '+esc(hint):''}</span></div><div class="bar"><i style="width:${v}%;background:${col(v)}"></i></div>`}
-function show(sym){
-  const t=tokens.find(x=>x.symbol===sym);if(!t)return;
-  document.querySelectorAll('tr.row').forEach(r=>r.classList.toggle('sel',r.dataset.s===sym));
-  $('#detail').innerHTML=`<h2 style="margin:0">${esc(t.symbol)} <span class="pill" style="background:${col(t.score)}">${t.score}/100</span></h2>
-  <div style="color:var(--mu);font-size:12px">${esc(t.address)}</div>
-  ${bar('Unique holders',t.components.holders,t.effHolders+' independent ('+t.rawHolders+' wallets'+(t.listedHolders?', explorer lists '+t.listedHolders.toLocaleString():'')+')')}
-  ${bar('Time-weighted volume',t.components.volume,usd(t.twVolume)+'/day')}
-  ${bar('Market cap',t.components.mcap,usd(t.marketCap))}
-  ${bar('Concentration',t.components.concentration,'top 5 = '+t.top5+'%')}
-  <div class="lbl"><span>Coordination penalty</span><span>-${t.penalty} pts</span></div>
-  <h3>Red flags</h3>${t.flags.length?t.flags.map(f=>`<div class="flag ${f.level}">${esc(f.text)}</div>`).join(''):'<div class="flag info">No flags detected</div>'}
-  <h3>Path to Ascended</h3><ul style="margin:4px 0;padding-left:18px">${t.path.map(p=>`<li>${esc(p)}</li>`).join('')}</ul>
-  <h3>Largest entities</h3><table>${t.topEntities.map(e=>`<tr><td>${e.share}%</td><td>${e.wallets} wallet${e.wallets>1?'s':''}</td><td style="color:var(--y)">${esc(e.reasons.join(', '))}</td></tr>`).join('')}</table>
-  <h3>Estimated buyback share</h3>${t.buyback.share}% (~${usd(t.buyback.usd)} of the modelled pool)
-  <h3>Embed badge</h3><code>&lt;img src="/api/badge/${esc(t.symbol)}.svg"&gt;</code><br><br><img src="/api/badge/${encodeURIComponent(t.symbol)}.svg">`;
-}
-function render(){
-  $('#rows').innerHTML=tokens.map(t=>`<tr class="row" data-s="${esc(t.symbol)}"><td><b>${esc(t.symbol)}</b></td><td><span class="pill" style="background:${col(t.score)}">${t.score}</span></td><td>${t.effHolders}</td><td>${usd(t.marketCap)}</td><td>${usd(t.twVolume)}</td><td>${t.top5}%</td><td>${t.clusteredShare}%</td><td>${t.buyback.share}%</td><td>${t.eligible?'<span style="color:var(--g)">Likely eligible</span>':t.noMarket?'<span style="color:var(--mu)">No market yet</span>':'<span style="color:var(--r)">Not yet</span>'}</td></tr>`).join('');
-  document.querySelectorAll('tr.row').forEach(r=>r.onclick=()=>show(r.dataset.s));
-}
-fetch('/api/tokens').then(r=>r.json()).then(d=>{
-  $('#mode').textContent=d.mode==='demo'?'DEMO DATA':'LIVE';tokens=d.tokens.sort((a,b)=>b.score-a.score);
-  render();if(tokens[0])show(tokens[0].symbol);
-}).catch(e=>{$('#rows').innerHTML='<tr><td colspan="9" style="color:var(--r)">Failed to load data: '+esc(e.message)+'. Check the terminal for errors.</td></tr>';});
-$('#go').onclick=async()=>{
-  const id=$('#q').value.trim();if(!id)return;$('#err').textContent='Scoring...';
-  try{const r=await fetch('/api/score/'+encodeURIComponent(id));const t=await r.json();if(!r.ok)throw new Error(t.error);
-    tokens=tokens.filter(x=>x.symbol!==t.symbol);tokens.unshift(t);render();show(t.symbol);$('#err').textContent='';
-  }catch(e){$('#err').textContent='Could not score: '+e.message;}
-};
-$('#q').onkeydown=(e)=>{if(e.key==='Enter')$('#go').click();};
+const $=s=>document.querySelector(s),esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const EXP='https://elysium.kinetiq.xyz/testnet-explorer/address/';
+const col=s=>s>=60?'#34d399':s>=40?'#fbbf24':'#fb7185',short=a=>a?a.slice(0,6)+'…'+a.slice(-4):'';
+const usd=n=>n>=1e6?'$'+(n/1e6).toFixed(2)+'M':n>=1e3?'$'+(n/1e3).toFixed(1)+'K':'$'+Math.round(n);
+const ls={get(k,d){try{return JSON.parse(localStorage.getItem(k))??d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
+let T=[],CFG,SEL,FILT='all',WATCH=ls.get('ascent:watch',[]);
+function ring(s,sz=44,st=5,na){const r=(sz-st)/2,c=2*Math.PI*r,m=sz/2;return `<svg width="${sz}" height="${sz}"><circle cx="${m}" cy="${m}" r="${r}" fill="none" stroke="#1f2a44" stroke-width="${st}"/><circle cx="${m}" cy="${m}" r="${r}" fill="none" stroke="${na?'#3a4565':col(s)}" stroke-width="${st}" stroke-linecap="round" stroke-dasharray="${na?0:c*s/100} ${c}" transform="rotate(-90 ${m} ${m})"/><text x="50%" y="50%" text-anchor="middle" dominant-baseline="central" fill="#e8ecf6" font-size="${sz*.3}" font-weight="700">${na?'—':Math.round(s)}</text></svg>`}
+function status(t){return t.eligible?['Likely eligible','g']:t.noMarket?['No market yet','m']:t.score>=CFG.eligibleScore?['Blocked by flags','y']:['Not yet','r']}
+const dl=t=>t.delta==null||Math.abs(t.delta)<.1?'':`<span class="dl ${t.delta>0?'up':'dn'}">${t.delta>0?'▲':'▼'}${Math.abs(t.delta).toFixed(1)}</span>`;
+function radar(c,sz=250){const m=sz/2,R=m-44,P=(v,i)=>{const a=-Math.PI/2+i*Math.PI/2;return[m+Math.cos(a)*R*v/100,m+Math.sin(a)*R*v/100]},pl=v=>v.map((x,i)=>P(x,i).join(',')).join(' ');
+const L=['Holders','Volume','Mkt cap','Spread'];
+return `<svg viewBox="0 0 ${sz} ${sz}" width="100%" style="max-width:280px;display:block;margin:auto">${[25,50,75,100].map(v=>`<polygon points="${pl([v,v,v,v])}" fill="none" stroke="#1f2a44"/>`).join('')}<polygon points="${pl([60,60,60,60])}" fill="none" stroke="#fbbf24" stroke-dasharray="4 4" opacity=".7"/><polygon points="${pl(c)}" fill="#7c5cff55" stroke="#22d3ee" stroke-width="2"/>${L.map((l,i)=>{const[x,y]=P(122,i);return `<text x="${x}" y="${y}" fill="#8a96b5" font-size="11" text-anchor="middle" dominant-baseline="central">${l}</text>`}).join('')}</svg>`}
+function own(t){return `<div class="own">${t.topEntities.map((x,i)=>`<i title="${x.share}% · ${x.wallets} wallet(s)" style="width:${x.share}%;background:${x.wallets>1?'#fb7185':`hsl(${255-i*14} 70% ${64-i*3}%)`}"></i>`).join('')}<i style="flex:1" title="everyone else"></i></div>`}
+const l2=(v,g)=>100*Math.pow(Math.min(1,Math.max(0,Math.log10(1+Math.max(0,v))/Math.log10(1+g))),2.5);
+function calc(h,v,m,tp,t){const w=CFG.weights,g=CFG.targets,c=[l2(h,g.holders),l2(v,g.volume),l2(m,g.mcap),Math.min(100,Math.max(0,100-Math.max(0,tp-CFG.top5Free)*3))];
+const s=Math.max(0,Math.min(100,c[0]*w.holders+c[1]*w.volume+c[2]*w.mcap+c[3]*w.concentration-t.penalty));
+const hard=t.flags.some(f=>f.level==='critical'&&f.text.includes('linked'));return{c,s,ok:s>=CFG.eligibleScore&&tp<=30&&!hard&&m>0}}
+function show(sym){const t=T.find(x=>x.symbol===sym);if(!t)return;SEL=sym;renderList();const[st,sc]=status(t),g=CFG.targets;
+const comp=t.components,cl=[comp.holders,comp.volume,comp.mcap,comp.concentration],gap=Math.max(0,CFG.eligibleScore-t.score);
+const tweet=`${t.symbol} scores ${Math.round(t.score)}/100 on Ascent (${st.toLowerCase()}). ${t.flags[0]?t.flags[0].text:''} ${location.href}`;
+$('#detail').innerHTML=`<div class="dh">${ring(t.score,84,8,t.noMarket)}<div><h2>${esc(t.symbol)} <span class="chip ${sc}">${st}</span></h2><div class="mu"><a href="${EXP+esc(t.address)}" target="_blank" rel="noopener">${short(t.address)}</a> · ${usd(t.marketCap)} cap${t.eligible?'':` · ${gap.toFixed(1)} pts to threshold`}</div></div></div>
+${radar(cl)}<div class="mu" style="text-align:center;font-size:11px">Dashed line = estimated Ascended threshold (60)</div>
+<h3>Who owns the supply</h3>${own(t)}<div style="margin-top:8px">${t.topEntities.slice(0,5).map(e=>`<div class="ent"><span>${e.sample?`<a href="${EXP+esc(e.sample)}" target="_blank" rel="noopener">${short(e.sample)}</a>`:'—'} ${e.wallets>1?`<span class="chip r">${e.wallets} linked wallets</span>`:''}</span><b>${e.share}%</b></div>`).join('')}</div>
+<h3>Red flags</h3>${t.flags.length?t.flags.map(f=>`<div class="fl ${f.level}">${esc(f.text)}</div>`).join(''):'<div class="fl info">No flags detected</div>'}
+<h3>Path to Ascended</h3><ul class="path">${t.path.map(p=>`<li>${esc(p)}</li>`).join('')}</ul>
+<h3>What-if simulator</h3><div class="sim">
+<span>Holders</span><input id="sH" type="range" min="0" max="2000" value="${t.effHolders}"><output id="oH"></output>
+<span>Volume/day</span><input id="sV" type="range" min="0" max="100000" step="500" value="${Math.min(100000,t.twVolume)}"><output id="oV"></output>
+<span>Market cap</span><input id="sM" type="range" min="0" max="5000000" step="25000" value="${Math.min(5e6,t.marketCap)}"><output id="oM"></output>
+<span>Top-5 share</span><input id="sT" type="range" min="0" max="80" step="0.5" value="${t.top5}"><output id="oT"></output></div>
+<div class="res" id="res"></div>
+<h3>Estimated buyback share</h3><div><b>${t.buyback.share}%</b> of a modelled pool of $<input id="pool" type="number" value="10000" style="width:90px;background:#0a1020;color:inherit;border:1px solid var(--bd);border-radius:6px;padding:2px 6px"> ≈ <b id="bb"></b></div>
+<div class="acts"><button id="cp">Copy badge embed</button><a target="_blank" rel="noopener" href="https://x.com/intent/post?text=${encodeURIComponent(tweet)}">Share on X</a></div>
+<div style="margin-top:10px"><img src="/api/badge/${encodeURIComponent(t.symbol)}.svg" alt="badge"></div>`;
+const f=()=>{const h=+$('#sH').value,v=+$('#sV').value,m=+$('#sM').value,tp=+$('#sT').value,r=calc(h,v,m,tp,t);
+$('#oH').textContent=h;$('#oV').textContent=usd(v);$('#oM').textContent=usd(m);$('#oT').textContent=tp+'%';
+$('#res').innerHTML=`${ring(r.s,56,6)}<div><b>${r.ok?'Would likely qualify':'Would not qualify yet'}</b><div class="mu">Drag the sliders to see what a creator must reach. Simulated score ${r.s.toFixed(1)}/100.</div></div>`};
+['sH','sV','sM','sT'].forEach(i=>$('#'+i).oninput=f);f();
+const bb=()=>$('#bb').textContent='$'+Math.round(t.buyback.share/100*(+$('#pool').value||0)).toLocaleString();$('#pool').oninput=bb;bb();
+$('#cp').onclick=()=>{navigator.clipboard&&navigator.clipboard.writeText(`<img src="${location.origin}/api/badge/${t.symbol}.svg">`);$('#cp').textContent='Copied ✓'}}
+function renderList(){const rows=T.filter(t=>FILT==='all'||(FILT==='ok'&&t.eligible)||(FILT==='watch'&&WATCH.includes(t.symbol))).sort((a,b)=>(a.noMarket-b.noMarket)||b.score-a.score);
+$('#list').innerHTML=`<div class="row h"><span></span><span>Token</span><span>Score</span><span class="hide">Holders</span><span>Mkt cap</span><span class="hide">Top 5</span><span>Status</span></div>`+(rows.map(t=>{const[st,sc]=status(t);return `<div class="row${t.symbol===SEL?' sel':''}" data-s="${esc(t.symbol)}"><button class="star${WATCH.includes(t.symbol)?' on':''}" data-w="${esc(t.symbol)}">★</button><div><b>${esc(t.symbol)}</b>${dl(t)}<small>${short(t.address)}</small></div>${ring(t.score,40,5,t.noMarket)}<span class="hide">${t.effHolders}</span><span>${usd(t.marketCap)}</span><span class="hide">${t.top5}%</span><span class="chip ${sc}">${st}</span></div>`}).join('')||'<p class="mu">Nothing here yet. Star a token to watch it.</p>');}
+function stats(){const ok=T.filter(t=>t.eligible).length,fl=T.filter(t=>t.flags.some(f=>f.level==='critical')).length,sc=T.filter(t=>!t.noMarket);
+$('#stats').innerHTML=[[T.length,'tokens tracked'],[ok,'likely Ascended-eligible'],[fl,'with critical red flags'],[sc.length?(sc.reduce((s,t)=>s+t.score,0)/sc.length).toFixed(0):'—','average Ascent score']].map(([a,b])=>`<div class="st"><b>${a}</b><span>${b}</span></div>`).join('')}
+function render(){stats();renderList();if(SEL)show(SEL)}
+$('#list').onclick=e=>{const w=e.target.closest('.star');if(w){const s=w.dataset.w;WATCH=WATCH.includes(s)?WATCH.filter(x=>x!==s):[...WATCH,s];ls.set('ascent:watch',WATCH);return renderList()}const r=e.target.closest('.row:not(.h)');if(r)show(r.dataset.s)};
+$('#tabs').onclick=e=>{const b=e.target.closest('button');if(!b)return;FILT=b.dataset.f;document.querySelectorAll('#tabs button').forEach(x=>x.classList.toggle('on',x===b));renderList()};
+fetch('/api/tokens').then(r=>r.json()).then(d=>{CFG=d.config;$('#mode').textContent=d.mode==='demo'?'DEMO DATA':'● LIVE';$('#mode').className='chip '+(d.mode==='demo'?'y':'g');
+const snap=ls.get('ascent:snap',null),cur=Object.fromEntries(d.tokens.map(t=>[t.symbol,t.score]));d.tokens.forEach(t=>{t.delta=snap&&snap.s[t.symbol]!=null?t.score-snap.s[t.symbol]:null});
+if(!snap||Date.now()-snap.at>216e5)ls.set('ascent:snap',{at:Date.now(),s:cur});T=d.tokens;SEL=(T.slice().sort((a,b)=>b.score-a.score)[0]||{}).symbol;
+$('#mg').innerHTML=[['Unique holders',CFG.weights.holders,`Target ${CFG.targets.holders}+ independent wallets; linked wallets count once`],['Time-weighted volume',CFG.weights.volume,`Recent days weigh more; target ${usd(CFG.targets.volume)}/day`],['Market cap',CFG.weights.mcap,`Target ${usd(CFG.targets.mcap)}`],['Concentration',CFG.weights.concentration,`Top 5 entities under ${CFG.top5Free}% of supply`]].map(([a,w,x])=>`<div><b>${Math.round(w*100)}%</b><br><strong>${a}</strong><br><span class="mu">${x}</span></div>`).join('')+`<div><b>−${CFG.maxCoordPenalty}</b><br><strong>Coordination penalty</strong><br><span class="mu">Supply held by bundled or commonly funded wallets</span></div>`;
+render()}).catch(e=>{$('#list').innerHTML='<p style="color:var(--r)">Failed to load data: '+esc(e.message)+'. Check the server terminal.</p>'});
+$('#go').onclick=async()=>{const id=$('#q').value.trim();if(!id)return;$('#err').textContent='Scoring… large tokens can take ~20s';try{const r=await fetch('/api/score/'+encodeURIComponent(id)),t=await r.json();if(!r.ok)throw new Error(t.error);T=T.filter(x=>x.symbol!==t.symbol);t.delta=null;T.unshift(t);SEL=t.symbol;render();$('#err').textContent='';$('#board').scrollIntoView()}catch(e){$('#err').textContent='Could not score: '+e.message}};
+$('#q').onkeydown=e=>{if(e.key==='Enter')$('#go').click()};
 </script></body></html>
