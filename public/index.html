@@ -42,6 +42,7 @@ h3{font-size:12px;color:var(--mu);text-transform:uppercase;letter-spacing:.08em;
 .acts{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.acts button,.acts a{padding:7px 14px;border-radius:10px;border:1px solid var(--bd);background:var(--s);color:var(--tx);font-size:13px}
 .meth{margin:34px 0 40px}.mg{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin-top:12px}.mg div{background:var(--s);border:1px solid var(--bd);border-radius:12px;padding:14px}.mg b{font:700 22px 'Space Grotesk';color:var(--c)}
 footer{color:var(--mu);font-size:12px;padding:0 24px 40px;max-width:1240px;margin:0 auto}
+code{background:#0a1020;padding:2px 6px;border-radius:6px;color:var(--c);font-size:12px}
 </style></head><body>
 <nav><div class="logo"><b>▲</b> Ascent</div><div class="l"><a href="#board">Leaderboard</a><a href="#method">Methodology</a><span id="mode" class="chip m">…</span></div></nav>
 <header class="wrap hero"><p class="eyebrow">Ascend × Elysium · Ascended Score Engine</p>
@@ -53,6 +54,8 @@ footer{color:var(--mu);font-size:12px;padding:0 24px 40px;max-width:1240px;margi
 <div class="grid"><div class="card" id="list"><p class="mu">Loading live Elysium data… first load can take up to a minute.</p></div><div class="card" id="detail"><p class="mu">Select a token to see its breakdown.</p></div></div></section>
 <section class="wrap meth" id="method"><h2>Methodology</h2><p class="mu" style="max-width:760px">Scores mirror the criteria Ascend publishes: market cap, unique holders, time-weighted volume and checks for concentrated or coordinated accumulation. Ascend's exact thresholds are internal and unpublished, so Ascent's targets are estimates and are fully configurable. This is a decision aid, not an official ruling.</p>
 <div class="mg" id="mg"></div><p class="mu" style="max-width:760px;margin-top:14px">Clustering uses on-chain transfers only: wallets receiving from the pool in the same block, and wallets funded by one common sender, are merged into one entity. Contract holders (pools, hooks, lockers) are excluded. Wallets holding under 0.001% of supply are ignored as dust.</p></section>
+<section class="wrap meth" id="api"><h2>Developer API</h2><p class="mu" style="max-width:760px">Free, CORS-enabled JSON so other Elysium builders (trading bots, dashboards, launchpad pages) can show Ascent scores.</p>
+<div class="mg"><div><code>GET /api/tokens</code><br><span class="mu">All tracked tokens with scores, flags and buyback estimates</span></div><div><code>GET /api/score/:address</code><br><span class="mu">Score any token by address or symbol</span></div><div><code>GET /api/badge/:symbol.svg</code><br><span class="mu">Embeddable score badge</span></div></div></section>
 <footer>Built for the Ascend × Elysium Builder Competition. Data from the Elysium testnet explorer API. Not financial advice.</footer>
 <script>
 const $=s=>document.querySelector(s),esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -75,7 +78,7 @@ const hard=t.flags.some(f=>f.level==='critical'&&f.text.includes('linked'));retu
 function show(sym){const t=T.find(x=>x.symbol===sym);if(!t)return;SEL=sym;renderList();const[st,sc]=status(t),g=CFG.targets;
 const comp=t.components,cl=[comp.holders,comp.volume,comp.mcap,comp.concentration],gap=Math.max(0,CFG.eligibleScore-t.score);
 const tweet=`${t.symbol} scores ${Math.round(t.score)}/100 on Ascent (${st.toLowerCase()}). ${t.flags[0]?t.flags[0].text:''} ${location.href}`;
-$('#detail').innerHTML=`<div class="dh">${ring(t.score,84,8,t.noMarket)}<div><h2>${esc(t.symbol)} <span class="chip ${sc}">${st}</span></h2><div class="mu"><a href="${EXP+esc(t.address)}" target="_blank" rel="noopener">${short(t.address)}</a> · ${usd(t.marketCap)} cap${t.eligible?'':` · ${gap.toFixed(1)} pts to threshold`}</div></div></div>
+$('#detail').innerHTML=`<div class="dh">${ring(t.score,84,8,t.noMarket)}<div><h2>${esc(t.symbol)} <span class="chip ${sc}">${st}</span></h2><div class="mu"><a href="${EXP+esc(t.address)}" target="_blank" rel="noopener">${short(t.address)}</a> · ${usd(t.marketCap)} cap${t.eligible?'':gap>0?` · ${gap.toFixed(1)} pts to threshold`:' · score clears threshold, flags block it'}</div></div></div>
 ${radar(cl)}<div class="mu" style="text-align:center;font-size:11px">Dashed line = estimated Ascended threshold (60)</div>
 <h3>Who owns the supply</h3>${own(t)}<div style="margin-top:8px">${t.topEntities.slice(0,5).map(e=>`<div class="ent"><span>${e.sample?`<a href="${EXP+esc(e.sample)}" target="_blank" rel="noopener">${short(e.sample)}</a>`:'—'} ${e.wallets>1?`<span class="chip r">${e.wallets} linked wallets</span>`:''}</span><b>${e.share}%</b></div>`).join('')}</div>
 <h3>Red flags</h3>${t.flags.length?t.flags.map(f=>`<div class="fl ${f.level}">${esc(f.text)}</div>`).join(''):'<div class="fl info">No flags detected</div>'}
@@ -91,7 +94,7 @@ ${radar(cl)}<div class="mu" style="text-align:center;font-size:11px">Dashed line
 <div style="margin-top:10px"><img src="/api/badge/${encodeURIComponent(t.symbol)}.svg" alt="badge"></div>`;
 const f=()=>{const h=+$('#sH').value,v=+$('#sV').value,m=+$('#sM').value,tp=+$('#sT').value,r=calc(h,v,m,tp,t);
 $('#oH').textContent=h;$('#oV').textContent=usd(v);$('#oM').textContent=usd(m);$('#oT').textContent=tp+'%';
-$('#res').innerHTML=`${ring(r.s,56,6)}<div><b>${r.ok?'Would likely qualify':'Would not qualify yet'}</b><div class="mu">Drag the sliders to see what a creator must reach. Simulated score ${r.s.toFixed(1)}/100.</div></div>`};
+$('#res').innerHTML=`${ring(r.s,56,6)}<div><b>${r.ok?'Would likely qualify':'Would not qualify yet'}</b>${r.ok?'':` <span class="chip y">${m<=0?'no market':tp>30?'top-5 must be ≤30%':t.flags.some(x=>x.level==='critical'&&x.text.includes('linked'))?'linked wallets':'score under '+CFG.eligibleScore}</span>`}<div class="mu">Drag the sliders to see what a creator must reach. Simulated score ${r.s.toFixed(1)}/100.</div></div>`};
 ['sH','sV','sM','sT'].forEach(i=>$('#'+i).oninput=f);f();
 const bb=()=>$('#bb').textContent='$'+Math.round(t.buyback.share/100*(+$('#pool').value||0)).toLocaleString();$('#pool').oninput=bb;bb();
 $('#cp').onclick=()=>{navigator.clipboard&&navigator.clipboard.writeText(`<img src="${location.origin}/api/badge/${t.symbol}.svg">`);$('#cp').textContent='Copied ✓'}}
@@ -108,7 +111,7 @@ const snap=ls.get('ascent:snap',null),cur=Object.fromEntries(d.tokens.map(t=>[t.
 if(!snap||Date.now()-snap.at>216e5)ls.set('ascent:snap',{at:Date.now(),s:cur});T=d.tokens;SEL=T.find(x=>x.symbol===SEL)?SEL:(T.slice().sort((a,b)=>b.score-a.score)[0]||{}).symbol;
 $('#mg').innerHTML=[['Unique holders',CFG.weights.holders,`Target ${CFG.targets.holders}+ independent wallets; linked wallets count once`],['Time-weighted volume',CFG.weights.volume,`Recent days weigh more; target ${usd(CFG.targets.volume)}/day`],['Market cap',CFG.weights.mcap,`Target ${usd(CFG.targets.mcap)}`],['Concentration',CFG.weights.concentration,`Top 5 entities under ${CFG.top5Free}% of supply`]].map(([a,w,x])=>`<div><b>${Math.round(w*100)}%</b><br><strong>${a}</strong><br><span class="mu">${x}</span></div>`).join('')+`<div><b>−${CFG.maxCoordPenalty}</b><br><strong>Coordination penalty</strong><br><span class="mu">Supply held by bundled or commonly funded wallets</span></div>`;
 render()}
-jf('/data.json',8000).then(d=>apply(d,true)).catch(()=>{}).finally(()=>jf('/api/tokens',50000).then(d=>apply(d,false)).catch(e=>{if(!T.length)$('#list').innerHTML='<p style="color:var(--r)">Could not load data ('+esc(e.message)+'). Run npm run snapshot, then redeploy.</p>'}));
+jf('/data.json',8000).then(d=>apply(d,true)).catch(()=>{}).finally(()=>jf('/api/tokens',50000).then(d=>apply(d,d.source==='snapshot')).catch(e=>{if(!T.length)$('#list').innerHTML='<p style="color:var(--r)">Could not load data ('+esc(e.message)+'). Run npm run snapshot, then redeploy.</p>'}));
 $('#go').onclick=async()=>{const id=$('#q').value.trim();if(!id)return;$('#err').textContent='Scoring… large tokens can take ~20s';try{const r=await fetch('/api/score/'+encodeURIComponent(id)),t=await r.json();if(!r.ok)throw new Error(t.error);T=T.filter(x=>x.symbol!==t.symbol);t.delta=null;T.unshift(t);SEL=t.symbol;render();$('#err').textContent='';$('#board').scrollIntoView()}catch(e){$('#err').textContent='Could not score: '+e.message}};
 $('#q').onkeydown=e=>{if(e.key==='Enter')$('#go').click()};
 </script></body></html>
