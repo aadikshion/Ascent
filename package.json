@@ -5,7 +5,8 @@
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
-    "test": "node test.js"
+    "test": "node test.js",
+    "snapshot": "node snapshot.js"
   },
   "dependencies": {
     "ethers": "^6.13.0",
