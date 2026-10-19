@@ -1,9 +1,5 @@
 {
-  "functions": {
-    "server.js": {
-      "maxDuration": 60,
-      "includeFiles": "{public/**,watchlist.json}"
-    }
-  },
+  "functions": { "server.js": { "maxDuration": 60, "includeFiles": "{public/**,watchlist.json}" } },
+  "headers": [{ "source": "/(.*)", "headers": [{ "key": "Access-Control-Allow-Origin", "value": "*" }] }],
   "rewrites": [{ "source": "/(.*)", "destination": "/server.js" }]
 }

@@ -8,6 +8,16 @@ const { analyze, estimateBuybacks, CONFIG } = require('./lib/score');
   const res = (await loadTokens()).map(analyze);
   const bb = estimateBuybacks(res, Number(process.env.BUYBACK_POOL_USD || 10000));
   res.forEach((r, i) => { r.buyback = bb[i]; });
-  fs.writeFileSync('public/data.json', JSON.stringify({ mode: mode(), config: CONFIG, at: Date.now(), tokens: res }));
+  const payload = { mode: mode(), config: CONFIG, at: Date.now(), tokens: res };
+  fs.writeFileSync('public/data.json', JSON.stringify(payload));
+  // Static API + badges: served by the CDN, no server function needed
+  const { badgeSvg } = require('./lib/badge');
+  const safe = (x) => String(x).replace(/[^A-Za-z0-9_-]/g, '');
+  fs.mkdirSync('public/badges', { recursive: true }); fs.mkdirSync('public/v1/score', { recursive: true });
+  for (const t of res) for (const k of new Set([safe(t.symbol), safe(t.address.toLowerCase())])) {
+    fs.writeFileSync(`public/badges/${k}.svg`, badgeSvg(t));
+    fs.writeFileSync(`public/v1/score/${k}.json`, JSON.stringify(t));
+  }
+  fs.writeFileSync('public/v1/tokens.json', JSON.stringify(payload));
   console.log('wrote public/data.json with ' + res.length + ' tokens (mode: ' + mode() + ')');
 })().catch((e) => { console.error(e); process.exit(1); });
