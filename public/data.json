@@ -1,1 +1,1 @@
-{"mode":"live","config":{"targets":{"holders":500,"volume":50000,"mcap":1000000},"weights":{"holders":0.3,"volume":0.25,"mcap":0.2,"concentration":0.25},"decay":0.8,"top5Free":25,"maxCoordPenalty":40,"eligibleScore":60,"dustPct":0.001},"at":1793256228515,"tokens":[]}
+{"mode":"live","config":{"targets":{"holders":500,"volume":50000,"mcap":1000000},"weights":{"holders":0.3,"volume":0.25,"mcap":0.2,"concentration":0.25},"decay":0.8,"top5Free":25,"maxCoordPenalty":40,"eligibleScore":60,"dustPct":0.001},"at":1793282101910,"tokens":[]}
